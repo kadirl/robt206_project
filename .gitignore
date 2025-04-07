@@ -1,0 +1,50 @@
+# Arduino build files
+*.elf
+*.hex
+*.bin
+*.eep
+*.map
+
+# Arduino backup files
+*.bak
+*.d
+
+# Arduino IDE metadata
+*.ino.*
+*.cpp.*
+*.o
+
+# PlatformIO
+.pio/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.env
+*.env
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+*.log
+
+# Compiled libraries
+lib/
+
+# Node (optional, if web dashboard etc.)
+node_modules/
+
+# Personal settings
+*.code-workspace
+*.user
+
+# Serial monitor logs (optional, if you save them)
+logs/
+
