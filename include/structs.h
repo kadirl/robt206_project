@@ -5,15 +5,30 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
+
+// =============================
+//      CONSTANTS & DEFINES
+// =============================
+
+// Pipe addresses for radio communication
 #define CAR_RADIO_ADDRESS {'0', '0','0','0','0','1'}    // Car writes, remote reads
 #define REMOTE_RADIO_ADDRESS {'0', '0','0','0','0','2'} // Remote writes, car reads
 
+// Start and end markers for structs sent over serial remote <-> pc
 const byte SERIAL_START_MARKER = 0x7E;
 const byte SERIAL_END_MARKER = 0x7F;
-const int CYCLE_WAIT = 30;
 
-const int MAX_POWER_CHANGE_PER_CYCLE = 50;
+// Common loop delay for remote and car
+// Needed to slow down loop() to avoid desyncs
+constexpr int LOOP_WAIT = 30;
 
+// Acceleration limiter for motors
+constexpr int MAX_POWER_CHANGE_PER_CYCLE = 50;
+
+
+// =================
+//      STRUCTS
+// =================
 
 // Joystick reading format
 struct __attribute__((packed)) JoystickRead {
