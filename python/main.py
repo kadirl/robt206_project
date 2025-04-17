@@ -99,7 +99,7 @@ if __name__ == "__main__":
     rand1 = 100
     rand2 = 50
 
-    SERIAL_PORT = '/dev/tty.usbmodem1101' # CHANGE AS NEEDED!
+    SERIAL_PORT = '/dev/cu.usbmodem1201' # CHANGE AS NEEDED!
     BAUD_RATE = 9600 # Must match Arduino
 
     # --- Define Struct Formats ---
