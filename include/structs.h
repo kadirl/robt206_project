@@ -14,16 +14,20 @@
 #define CAR_RADIO_ADDRESS {'0', '0','0','0','0','1'}    // Car writes, remote reads
 #define REMOTE_RADIO_ADDRESS {'0', '0','0','0','0','2'} // Remote writes, car reads
 
+const byte thisSlaveAddress[5] = {'R','x','A','A','A'};
+
 // Start and end markers for structs sent over serial remote <-> pc
 const byte SERIAL_START_MARKER = 0x7E;
 const byte SERIAL_END_MARKER = 0x7F;
 
 // Common loop delay for remote and car
 // Needed to slow down loop() to avoid desyncs
-constexpr int LOOP_WAIT = 30;
+constexpr int LOOP_WAIT = 50;
 
 // Acceleration limiter for motors
-constexpr int MAX_POWER_CHANGE_PER_CYCLE = 50;
+constexpr int MAX_POWER_CHANGE_PER_CYCLE = 100;
+const int MOTOR_MAX_INT = 250;
+const float MOTOR_MAX_FLOAT = 250.0;
 
 
 // =================
@@ -40,30 +44,39 @@ struct __attribute__((packed)) JoystickRead {
 
 // gyro-521 (accel + gyro) reading format
 struct __attribute__((packed)) GyroRead {
-    short accelX;
-    short accelY;
-    short accelZ;
-    short gyroX;
-    short gyroY;
-    short gyroZ;
+    float accelX;
+    float accelY;
+    float accelZ;
+    float gyroX;
+    float gyroY;
+    float gyroZ;
 };
 
 
 // Lidar reading format
 struct __attribute__((packed)) LidarRead {
-    unsigned short angle;
+    short angle;
     unsigned short distance;
+};
+
+// All three sensors at once
+struct __attribute__((packed)) FullLidarRead {
+    LidarRead sensor1;
+    LidarRead sensor2;
+    LidarRead sensor3;
+    unsigned long timestamp;
 };
 
 
 // Car -> Remote
 struct __attribute__((packed)) CarToRemote {
     // lidar data
-    bool lidar_updated;
-    LidarRead lidar;
+    FullLidarRead lidar;
+
+    // gy-273
+    float azimuth;
 
     // gyro 521 data
-    bool gyro_updated;
     GyroRead gyro;
 
     // timestamp
@@ -81,11 +94,12 @@ struct __attribute__((packed)) RemoteToCar {
 // Remote -> PC
 struct __attribute__((packed)) RemoteToPC {
     // lidar data
-    bool lidar_updated;
-    LidarRead lidar;
+    FullLidarRead lidar;
+
+    // gy-273
+    float azimuth;
 
     // gyro 521 data
-    bool gyro_updated;
     GyroRead gyro;
 
     // sensor reading timestamp

@@ -5,6 +5,7 @@
 #include "Utils.h"
 #include <RF24.h>
 #include <Arduino.h>
+// #include <structs.h>
 
 
 // Function to setup NRF24 module.
@@ -13,23 +14,24 @@
 bool setupRadio(RF24& radio,  byte readingPipe[6], byte writingPipe[6]) {
     // Try to initialize the radio
     if(!radio.begin()) {
-        // Serial.println("Failed to initialize radio");
+        Serial.println("Failed to initialize radio");
         return false;
     }
 
     // Check if a radio module connected to arduino
     if (radio.isChipConnected()) {
-        // Serial.println("RF24 Chip connected");
+        Serial.println("RF24 Chip connected");
     } else {
-        // Serial.println("RF24 chip not connected");
+        Serial.println("RF24 chip not connected");
         return false;
     }
 
     // Set power amplifier level to low (safer for modules without external power)
-    radio.setPALevel(RF24_PA_MAX);
+    // radio.setPALevel(RF24_PA_MAX);
+    radio.setPALevel(RF24_PA_MIN);
     radio.setDataRate(RF24_250KBPS);
     // radio.setRetries(5,15);
-    radio.setChannel(100);
+    radio.setChannel(124);
 
     // Set pipe addresses
     radio.openWritingPipe(writingPipe);
@@ -82,3 +84,42 @@ bool checkRadio(RF24& radio, bool initiator, int timeout, int tries) {
         }
     }
 }
+
+
+// template <typename T, size_t Size>
+// class FIFOBuffer {
+// private:
+//     T buffer[Size];
+//     size_t head = 0;
+//     size_t tail = 0;
+//     size_t count = 0;
+//
+// public:
+//     bool isFull() const {
+//         return count == Size;
+//     }
+//
+//     bool isEmpty() const {
+//         return count == 0;
+//     }
+//
+//     bool enqueue(const T& item) {
+//         if (isFull()) {
+//             return false;
+//         }
+//         buffer[head] = item;
+//         head = (head + 1) % Size;
+//         count++;
+//         return true;
+//     }
+//
+//     bool dequeue(T& item) {
+//         if (isEmpty()) {
+//             return false;
+//         }
+//         item = buffer[tail];
+//         tail = (tail + 1) % Size;
+//         count--;
+//         return true;
+//     }
+// }

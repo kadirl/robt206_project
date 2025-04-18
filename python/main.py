@@ -104,31 +104,43 @@ if __name__ == "__main__":
 
     # --- Define Struct Formats ---
     # Data RECEIVING From Arduino (RemoteToPC struct)
+    # receive_struct_format = (
+    #     "<"     # little-endian
+    #     "?"     # bool lidar_updated
+    #     "HH"    # lidar.angle, lidar.distance (unsigned short)
+    #     "?"     # bool gyro_updated
+    #     "hhhhhh"# accelX, Y, Z, gyroX, Y, Z (short) - Changed from 6h
+    #     "L"     # unsigned long timestamp (4 bytes on most Arduinos)
+    #     "?"     # bool mode (manual/auto)
+    #     "hh"    # joystick.speed, joystick.turn (short)
+    #     "?"     # joystick.k (bool)
+    # )
+
     receive_struct_format = (
-        "<"     # little-endian
-        "?"     # bool lidar_updated
-        "HH"    # lidar.angle, lidar.distance (unsigned short)
-        "?"     # bool gyro_updated
-        "hhhhhh"# accelX, Y, Z, gyroX, Y, Z (short) - Changed from 6h
-        "L"     # unsigned long timestamp (4 bytes on most Arduinos)
-        "?"     # bool mode (manual/auto)
-        "hh"    # joystick.speed, joystick.turn (short)
-        "?"     # joystick.k (bool)
+        "<"              # Little-endian
+        "hHhHhH"         # Lidar angles: sensor1.angle, sensor2.angle, sensor3.angle (shorts)
+        "L"            # Lidar distances: sensor1.dist, sensor2.dist, sensor3.dist (unsigned shorts)
+        "f"              # Azimuth (float)
+        "ffffff"         # GyroRead: accelX, accelY, accelZ, gyroX, gyroY, gyroZ (floats)
+        "L"              # Timestamp (unsigned long)
+        "?"              # Mode (bool)
+        "hh?"            # Joystick: speed, turn (shorts), k (bool)
     )
+
     receive_struct_size = struct.calcsize(receive_struct_format)
     print(f"Receive Format (RemoteToPC): {receive_struct_format}, Size: {receive_struct_size}")
 
 
     # Data SENDING To Arduino (PCToRemote struct - controls car in auto mode)
     # Example: target speed and turn angle
-    send_struct_format = (
-        "<"     # little-endian
-        "h"     # short target_speed
-        "h"     # short target_turn
-        "?"     # shit
-    )
-    send_struct_size = struct.calcsize(send_struct_format)
-    print(f"Send Format (PCToRemote):    {send_struct_format}, Size: {send_struct_size}")
+    # send_struct_format = (
+    #     "<"     # little-endian
+    #     "h"     # short target_speed
+    #     "h"     # short target_turn
+    #     "?"     # shit
+    # )
+    # send_struct_size = struct.calcsize(send_struct_format)
+    # print(f"Send Format (PCToRemote):    {send_struct_format}, Size: {send_struct_size}")
 
 
     # --- Serial Port Setup ---
@@ -163,22 +175,22 @@ if __name__ == "__main__":
 
 
             # --- Try to SEND data to Arduino (e.g., on a timer) ---
-            current_time = time.time()
-            if current_time - last_send_time >= send_interval:
-                # Example data to send (replace with your actual logic)
-                rand1 += 1
-                rand2 += 1
-                target_speed_cmd = rand1 # Example command
-                target_turn_cmd = rand2  # Example command
-                data_to_send = (target_speed_cmd, target_turn_cmd, 1)
-
-                print(f"\n>>> SENDING To Arduino (PCToRemote): {data_to_send}")
-                if send_serial_data(ser, send_struct_format, data_to_send):
-                    # print("    Send successful.")
-                    last_send_time = current_time
-                else:
-                    print("    Send FAILED.")
-                    # Handle failure? Retry?
+            # current_time = time.time()
+            # if current_time - last_send_time >= send_interval:
+            #     # Example data to send (replace with your actual logic)
+            #     rand1 += 1
+            #     rand2 += 1
+            #     target_speed_cmd = rand1 # Example command
+            #     target_turn_cmd = rand2  # Example command
+            #     data_to_send = (target_speed_cmd, target_turn_cmd, 1)
+            #
+            #     print(f"\n>>> SENDING To Arduino (PCToRemote): {data_to_send}")
+            #     if send_serial_data(ser, send_struct_format, data_to_send):
+            #         # print("    Send successful.")
+            #         last_send_time = current_time
+            #     else:
+            #         print("    Send FAILED.")
+            #         # Handle failure? Retry?
 
             # Optional small delay to prevent high CPU usage in main loop
             # time.sleep(0.01)

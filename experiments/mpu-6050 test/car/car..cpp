@@ -1,74 +1,55 @@
-//
-// Created by Kadir on 17.04.2025.
-//
+#include <Wire.h>
+#include <MPU6050_light.h>
 
+MPU6050 mpu(Wire);
 
-#include <QMC5883LCompass.h>
-
-QMC5883LCompass compass;
-
-volatile bool dataReady = false;
-void dataReadyISR() {
-    dataReady = true;
-}
-
+unsigned long counter = 0;
+unsigned long diff = 0;
+unsigned long start = 0;
+unsigned long period = 1000;
 
 void setup() {
     Serial.begin(9600);
+    Wire.begin();
+    Wire.setClock(400000);
 
-    Serial.println("setup");
+    byte status = mpu.begin();
+    Serial.print("MPU6050 status: ");
+    Serial.println(status);
+    while (status != 0) { } // stop everything if there's an error
 
-    compass.init();
-
-    compass.setMode(0x01, 0x08, 0x10, 0x80);
-
-    compass.setCalibrationOffsets(-271.00, -71.00, 401.7);
-    compass.setCalibrationScales(1.31, 0.65, 1.42);
-
-    pinMode(19, INPUT);
-    attachInterrupt(digitalPinToInterrupt(19), dataReadyISR, RISING);  // Trigger when DRDY goes LOW
-
-
-    compass.read();
+    Serial.println("Calibrating gyro...");
+    delay(1000);
+    mpu.calcGyroOffsets();  // Automatically calibrates at startup
+    Serial.println("Done!\n");
 }
 
 void loop() {
+    if (start == 0) {
+        start = millis();
+    } else if (millis() - start < period) {
+        counter++;
+    } else {
+        Serial.print("READING PER SECONDS: ");
+        Serial.println(counter);
 
-    // // Read compass values
-    // compass.read();
-
-    // compass.read();
-    // int x = compass.getX();
-    // int y = -compass.getY();  // Flip Y axis
-
-    // float heading = atan2((float)y, (float)x) * (180.0 / PI);
-
-    // // Normalize to 0–360 degrees
-    // if (heading < 0) heading += 360.0;
-    // if (heading >= 360.0) heading -= 360.0;
-
-    // Serial.print("Corrected Heading: ");
-    // Serial.println(heading);
-
-    // delay(200);
-    // Serial.print("DRDY State: ");
-    // Serial.println(digitalRead(19));  // Should go LOW when new data is ready
-    // compass.read();
-
-
-    if (dataReady) {
-        dataReady = false;  // Reset flag
-
-        compass.read();
-        int x = compass.getX();
-        int y = -compass.getY();  // Flip Y axis
-
-        float heading = atan2((float)y, (float)x) * (180.0 / PI);
-
-        if (heading < 0) heading += 360.0;
-        if (heading >= 360.0) heading -= 360.0;
-
-        Serial.print("Corrected Heading: ");
-        Serial.println(heading);
+        counter = 0;
+        start = millis();
     }
+
+    mpu.update();
+
+    // Serial.print("Accel X: "); Serial.print(mpu.getAccX());
+    // Serial.print("\tY: "); Serial.print(mpu.getAccY());
+    // Serial.print("\tZ: "); Serial.println(mpu.getAccZ());
+
+    // Serial.print("Gyro X: "); Serial.print(mpu.getGyroX());
+    // Serial.print("\tY: "); Serial.print(mpu.getGyroY());
+    // Serial.print("\tZ: "); Serial.println(mpu.getGyroZ());
+
+
+
+    // Serial.println(mpu.getGyroZ());
+
+    // delay(50);
 }
