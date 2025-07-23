@@ -154,7 +154,7 @@ if __name__ == "__main__":
 
     # Start the serial thread
     stop_event = start_serial_thread(
-        port='/dev/cu.usbmodem1201',  # Change as needed
+        port='/dev/cu.usbmodem1101',  # Change as needed
         baud_rate=9600,
         receive_struct_format=receive_struct_format
     )
