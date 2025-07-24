@@ -1,5 +1,6 @@
 # DIY LiDAR-Based Autonomous Mapping and Navigation Robot
 
+<video width="630" height="300" src="https://github.com/user-attachments/assets/b62e1d9e-fedd-4c53-86b7-28f57e8e93c4"></video>
 A remote-controlled Arduino car with a 2D LiDAR array and Python data visualization, built for a Robotics 206 microcontrollers course at Nazarbayev University.
 
 
@@ -89,13 +90,6 @@ This project is an educational prototype for a robot vacuum cleaner platform. Th
 
 - Autonomous navigation and path planning were not implemented in time.
 - LiDAR was initially planned with laser rangefinders, but due to hardware failure, ultrasonic sensors were used.
-
-
-
-## Demo Video
-Sorry for bad video quality. I had to compress it to 10 MB
-<video width="630" height="300" src="https://github.com/user-attachments/assets/b62e1d9e-fedd-4c53-86b7-28f57e8e93c4"></video>
-
 
 
 ## File Descriptions
